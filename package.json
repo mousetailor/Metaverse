@@ -1,0 +1,22 @@
+{
+  "name": "metaverse-2d",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^30.5.2"
+  },
+  "dependencies": {
+    "axios": "^1.20.0"
+  }
+}
