@@ -3,6 +3,7 @@ packages:
   - "packages/*"
 allowBuilds:
   '@prisma/engines': false
+  bcrypt: true
   esbuild: false
   prisma: false
   workerd: false
