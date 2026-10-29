@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.mjs --tsconfig=tsconfig.json --external:pg-native --banner:js=\"import {createRequire} from 'module';const require=createRequire(import.meta.url);\"",
-    "start": "node dist/index.mjs"
+    "start": "node --env-file=../../packages/db/.env dist/index.mjs"
   },
   "keywords": [],
   "author": "",
