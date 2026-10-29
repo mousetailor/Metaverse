@@ -1,117 +1,87 @@
 const axios2 = require("axios");
 
-const BACKEND_URL = "http://localhost:3000"
-const WS_URL = "ws://localhost:3001"
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000";
+const WS_URL = "ws://localhost:3001";
 
-const axios = {
-  post: async (...args) => {
-    try {
-      const res = await axios2.post(...args)
-      return res
-    } catch (e) {
-      return e.response
-    }
-  },
-  get: async (...args) => {
-    try {
-      const res = await axios2.get(...args)
-      return res
-    } catch (e) {
-      return e.response
-    }
-  },
-  put: async (...args) => {
-    try {
-      const res = await axios2.put(...args)
-      return res
-    } catch (e) {
-      return e.response
-    }
-  },
-  delete: async (...args) => {
-    try {
-      const res = await axios2.delete(...args)
-      return res
-    } catch (e) {
-      return e.response
-    }
-  },
-}
+// Keep HTTP error responses available for assertions, but let connection errors
+// fail with their original message instead of returning undefined.
+const axios = axios2.create({
+  timeout: 5000,
+  validateStatus: () => true,
+});
+
+jest.setTimeout(15000);
 
 describe("Authentication", () => {
-  test('User is able to sign up only once', async () => {
+  test("User is able to sign up only once", async () => {
     const username = "anant" + Math.random();
     const password = "123456";
     const response = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
       username,
       password,
-      type: "admin"
-    })
+      type: "admin",
+    });
 
-    console.log("Signup status:", response?.status);
-    console.log("Signup error:", response?.data);
-
-    expect(response.status).toBe(200)
+    expect(response.status).toBe(200);
     const updatedResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
       username,
       password,
-      type: "admin"
-    })
+      type: "admin",
+    });
 
     expect(updatedResponse.status).toBe(400);
   });
 
-  test('Signup request fails if the username is empty', async () => {
-    const username = `anant-${Math.random()}` // anant-0.12312313
-    const password = "123456"
+  test("Signup request fails if the username is empty", async () => {
+    const username = `anant-${Math.random()}`; // anant-0.12312313
+    const password = "123456";
 
     const response = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      password
-    })
+      password,
+    });
 
-    expect(response.status).toBe(400)
-  })
+    expect(response.status).toBe(400);
+  });
 
-  test('Signin succeeds if the username and password are correct', async () => {
-    const username = `anant-${Math.random()}`
-    const password = "123456"
+  test("Signin succeeds if the username and password are correct", async () => {
+    const username = `anant-${Math.random()}`;
+    const password = "123456";
 
-    await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+    const signupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
       username,
       password,
-      type: "admin"
+      type: "admin",
     });
+    expect(signupResponse.status).toBe(200);
 
     const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
       username,
-      password
+      password,
     });
 
+    expect(response.status).toBe(200);
+    expect(response.data.token).toBeDefined();
+  });
 
-    console.log("Signin status:", response?.status);
-    console.log("Signin response:", response?.data);
-    expect(response.status).toBe(200)
-    expect(response.data.token).toBeDefined()
-  })
+  test("Signin fails if the username and password are incorrect", async () => {
+    const username = `anant-${Math.random()}`;
+    const password = "123456";
 
-  test('Signin fails if the username and password are incorrect', async () => {
-    const username = `anant-${Math.random()}`
-    const password = "123456"
-
-    await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+    const signupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
       username,
       password,
-      role: "admin"
+      type: "admin",
     });
+    expect(signupResponse.status).toBe(200);
 
     const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username: "WrongUsername",
-      password
-    })
+      username,
+      password: "wrong-password",
+    });
 
-    expect(response.status).toBe(403)
-  })
-})
+    expect(response.status).toBe(403);
+  });
+});
 
 // describe("User metadata endpoint", () => {
 //   let token = "";
