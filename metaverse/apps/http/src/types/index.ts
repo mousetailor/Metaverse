@@ -28,7 +28,7 @@ export const addElementSchema = z.object({
   y: z.number()
 })
 
-export const creatElementSchema = z.object({
+export const createElementSchema = z.object({
   imageUrl: z.string(),
   width: z.string(),
   height: z.string(),
@@ -37,6 +37,10 @@ export const creatElementSchema = z.object({
 
 export const updateElementSchema = z.object({
   imageUrl: z.string()
+})
+
+export const deleteElementSchema = z.object({
+    id: z.string(),
 })
 
 export const createAvatarSchema = z.object({
