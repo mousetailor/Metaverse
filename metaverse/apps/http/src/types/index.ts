@@ -1,9 +1,9 @@
-import z from "zod";
+import z, { transform } from "zod";
 
 export const signupSchema = z.object({
   username: z.string(),
   password: z.string(),
-  type: z.enum(["user","admin"])
+  type: z.enum(["user", "admin"])
 })
 
 export const signinSchema = z.object({
@@ -17,8 +17,8 @@ export const updateMetadataSchema = z.object({
 
 export const createSpaceSchema = z.object({
   name: z.string(),
-  dimensions:z.string().regex(/^[0-9]{1,4}x[0-9]{1,4}$/),
-  mapId:z.string()
+  dimensions: z.string().regex(/^[0-9]{1,4}x[0-9]{1,4}$/),
+  mapId: z.string()
 })
 
 export const addElementSchema = z.object({
@@ -40,7 +40,7 @@ export const updateElementSchema = z.object({
 })
 
 export const deleteElementSchema = z.object({
-    id: z.string(),
+  id: z.string(),
 })
 
 export const createAvatarSchema = z.object({
@@ -50,12 +50,16 @@ export const createAvatarSchema = z.object({
 
 export const createMapSchema = z.object({
   thumbnail: z.string(),
+  name: z.string(),
   dimensions: z.string().regex(/^[0-9]{1,4}x[0-9]{1,4}$/),
   defaultElements: z.array(z.object({
     elementId: z.string(),
     x: z.number(),
     y: z.number()
-}))
+  })),
+}).transform(({ dimensions, ...rest }) => {
+  const [width, height] = dimensions.split("x").map(Number)
+  return { ...rest, width, height }
 })
 
 declare global {
@@ -66,22 +70,4 @@ declare global {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
